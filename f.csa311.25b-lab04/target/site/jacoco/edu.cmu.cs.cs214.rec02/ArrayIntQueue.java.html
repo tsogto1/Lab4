@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArrayIntQueue.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">rec3</a> &gt; <a href="index.source.html" class="el_package">edu.cmu.cs.cs214.rec02</a> &gt; <span class="el_source">ArrayIntQueue.java</span></div><h1>ArrayIntQueue.java</h1><pre class="source lang-java linenums">package edu.cmu.cs.cs214.rec02;
+
+import java.util.Arrays;
+
+/**
+ * A resizable-array implementation of the {@link IntQueue} interface. The head of
+ * the queue starts out at the head of the array, allowing the queue to grow and
+ * shrink in constant time.
+ *
+ * This implementation initially contained bugs, which have been fixed.
+ *
+ * @author Alex Lockwood
+ * @author Ye Lu
+ */
+public class ArrayIntQueue implements IntQueue {
+
+    /**
+     * An array holding this queue's data
+     */
+    private int[] elementData;
+
+    /**
+     * Index of the next dequeue-able value
+     */
+    private int head;
+
+    /**
+     * Current size of queue
+     */
+    private int size;
+
+    /**
+     * The initial size for new instances of ArrayQueue
+     */
+    private static final int INITIAL_SIZE = 10;
+
+    /**
+     * Constructs an empty queue with an initial capacity of ten.
+     */
+<span class="fc" id="L40">    public ArrayIntQueue() {</span>
+<span class="fc" id="L41">        elementData = new int[INITIAL_SIZE];</span>
+<span class="fc" id="L42">        head = 0;</span>
+<span class="fc" id="L43">        size = 0;</span>
+<span class="fc" id="L44">    }</span>
+
+    /** {@inheritDoc} */
+    public void clear() {
+<span class="nc" id="L48">        Arrays.fill(elementData, 0);</span>
+<span class="nc" id="L49">        size = 0;</span>
+<span class="nc" id="L50">        head = 0;</span>
+<span class="nc" id="L51">    }</span>
+
+    /** {@inheritDoc} */
+    public Integer dequeue() {
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">        if (isEmpty()) {</span>
+<span class="nc" id="L56">            return null;</span>
+        }
+<span class="fc" id="L58">        Integer value = elementData[head];</span>
+<span class="fc" id="L59">        elementData[head] = 0; // Fix: Prevent stale references</span>
+<span class="fc" id="L60">        head = (head + 1) % elementData.length;</span>
+<span class="fc" id="L61">        size--;</span>
+<span class="fc" id="L62">        return value;</span>
+    }
+
+    /** {@inheritDoc} */
+    public boolean enqueue(Integer value) {
+<span class="fc" id="L67">        ensureCapacity();</span>
+<span class="fc" id="L68">        int tail = (head + size) % elementData.length;</span>
+<span class="fc" id="L69">        elementData[tail] = value;</span>
+<span class="fc" id="L70">        size++;</span>
+<span class="fc" id="L71">        return true;</span>
+    }
+
+    /** {@inheritDoc} */
+    public boolean isEmpty() {
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        return size == 0; // Fix: Ensure proper empty check</span>
+    }
+
+    /** {@inheritDoc} */
+    public Integer peek() {
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        if (isEmpty()) return null; // Fix: Prevent accessing empty queue</span>
+<span class="fc" id="L82">        return elementData[head];</span>
+    }
+
+    /** {@inheritDoc} */
+    public int size() {
+<span class="fc" id="L87">        return size;</span>
+    }
+
+    /**
+     * Increases the capacity of this &lt;tt&gt;ArrayIntQueue&lt;/tt&gt; instance, if
+     * necessary, to ensure that it can hold at least size + 1 elements.
+     */
+    private void ensureCapacity() {
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        if (size == elementData.length) {</span>
+<span class="fc" id="L96">            int oldCapacity = elementData.length;</span>
+<span class="fc" id="L97">            int newCapacity = 2 * oldCapacity + 1;</span>
+<span class="fc" id="L98">            int[] newData = new int[newCapacity];</span>
+            
+<span class="fc bfc" id="L100" title="All 2 branches covered.">            for (int i = 0; i &lt; size; i++) {</span>
+<span class="fc" id="L101">                newData[i] = elementData[(head + i) % oldCapacity]; // Fix: Properly copy queue contents</span>
+            }
+            
+<span class="fc" id="L104">            elementData = newData;</span>
+<span class="fc" id="L105">            head = 0;</span>
+        }
+<span class="fc" id="L107">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
